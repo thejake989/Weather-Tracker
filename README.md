@@ -10,4 +10,4 @@ Weather Tracker 5000 is a simple app to check the weather in any city. You can e
 
 ### Here is the link to get started!
 
-https://thejake989.github.io/Work-Day-Scheduler/
+https://thejake989.github.io/Weather-Tracker/
