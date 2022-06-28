@@ -116,3 +116,88 @@ var creatBtn = function (btnText) {
     .attr("type", "submit");
   return btn;
 };
+//Local storage saved city load
+var loadSavedCity = function () {
+  citiesListArr = JSON.parse(localStorage.getItem("weatherInfo"));
+  if (citiesListArr == null) {
+    citiesListArr = [];
+  }
+  for (var i = 0; i < citiesListArr.length; i++) {
+    var cityNameBtn = creatBtn(citiesListArr[i]);
+    searchedCities.append(cityNameBtn);
+  }
+};
+//Saves the searched city
+var saveCityName = function (searchCityName) {
+  var newcity = 0;
+  citiesListArr = JSON.parse(localStorage.getItem("weatherInfo"));
+  if (citiesListArr == null) {
+    citiesListArr = [];
+    citiesListArr.unshift(searchCityName);
+  } else {
+    for (var i = 0; i < citiesListArr.length; i++) {
+      if (searchCityName.toLowerCase() == citiesListArr[i].toLowerCase()) {
+        return newcity;
+      }
+    }
+    if (citiesListArr.length < numOfCities) {
+      citiesListArr.unshift(searchCityName);
+    } else {
+      //Keeps saved array under 10 saved cities
+      citiesListArr.pop();
+      citiesListArr.unshift(searchCityName);
+    }
+  }
+  localStorage.setItem("weatherInfo", JSON.stringify(citiesListArr));
+  newcity = 1;
+  return newcity;
+};
+//Populates previous searched cities, with button
+var createCityNameBtn = function (searchCityName) {
+  var saveCities = JSON.parse(localStorage.getItem("weatherInfo"));
+  if (saveCities.length == 1) {
+    var cityNameBtn = creatBtn(searchCityName);
+    searchedCities.prepend(cityNameBtn);
+  } else {
+    for (var i = 1; i < saveCities.length; i++) {
+      if (searchCityName.toLowerCase() == saveCities[i].toLowerCase()) {
+        return;
+      }
+    }
+    if (searchedCities[0].childElementCount < numOfCities) {
+      var cityNameBtn = creatBtn(searchCityName);
+    } else {
+      searchedCities[0].removeChild(searchedCities[0].lastChild);
+      var cityNameBtn = creatBtn(searchCityName);
+    }
+    searchedCities.prepend(cityNameBtn);
+    $(":button.list-group-item-action").on("click", function () {
+      BtnClickHandler(event);
+    });
+  }
+};
+//Function call
+loadSavedCity();
+//Create button with searched city event handleer
+var formSubmitHandler = function (event) {
+  event.preventDefault();
+  var searchCityName = $("#searchCity").val().trim();
+  var newcity = saveCityName(searchCityName);
+  getCityWeather(searchCityName);
+  if (newcity == 1) {
+    createCityNameBtn(searchCityName);
+  }
+};
+var BtnClickHandler = function (event) {
+  event.preventDefault();
+  //City Name
+  var searchCityName = event.target.textContent.trim();
+  getCityWeather(searchCityName);
+};
+//Call functions
+$("#searchCityForm").on("submit", function () {
+  formSubmitHandler(event);
+});
+$(":button.list-group-item-action").on("click", function () {
+  BtnClickHandler(event);
+});
